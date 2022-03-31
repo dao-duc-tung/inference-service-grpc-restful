@@ -19,6 +19,7 @@
   - output: content, model output
 
 - Model is loaded at runtime when starting app given an S3 URL
+  - The system contains only 1 model
 
 ### Non-functional requirements
 
@@ -33,25 +34,30 @@
 
 ### API design
 
-- runModel(input)
-- getModelOutput(input_id) -> (input, output)
+- invokeModel(input)
+- getInvocationInfo(input_id) -> (input, output)
 
 ### Architecture overview
 
-> runModel() --> Model Module --> database
+> invokeModel() --> Main service --> database
 
-> getModelOutput() <--> Data Module <--> database
+> getInvocationInfo() <--> Main service <--> database
 
-> S3 URL --> Model Module
+> S3 URL --> Main service
 
-- Model Module responsibilities
+- Main service contains
+
+  - Model Manager
+  - Database Manager
+
+- Model Manager responsibilities
 
   - Load model at start given
-  - Run model inference when runModel() API is called
+  - Run model inference when invokeModel() API is called
 
-- Data Module responsibilities
+- Database Manager responsibilities
 
   - Save model input and model output to database
-  - Retrieve model input and model output when getModelOutput() API is called
+  - Retrieve model input and model output when getInvocationInfo() API is called
 
 ## Detailed implementation
