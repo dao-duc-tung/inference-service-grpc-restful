@@ -1,5 +1,7 @@
 # aaqua-sys
 
+## Quick start
+
 ## Requirements
 
 ### Functional requirements
@@ -26,3 +28,30 @@
   - Flexible to change the database technology
 - Reliability: Service is resilient, handle errors
 - Testability: Write unit tests, integration tests
+
+## High-level design
+
+### API design
+
+- runModel(input)
+- getModelOutput(input_id) -> (input, output)
+
+### Architecture overview
+
+> runModel() --> Model Module --> database
+
+> getModelOutput() <--> Data Module <--> database
+
+> S3 URL --> Model Module
+
+- Model Module responsibilities
+
+  - Load model at start given
+  - Run model inference when runModel() API is called
+
+- Data Module responsibilities
+
+  - Save model input and model output to database
+  - Retrieve model input and model output when getModelOutput() API is called
+
+## Detailed implementation
