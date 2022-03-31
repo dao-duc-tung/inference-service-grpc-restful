@@ -43,12 +43,12 @@ class InMemoryDatabaseMgr(IDatabaseMgr):
         pass
 
     def save_model_input(self, model_input: ModelInput, *args, **kwargs):
-        self._model_input_dict[model_input.id] = model_input
+        self._model_input_dict[str(model_input.id)] = model_input
 
     def save_model_output(
         self, model_input: ModelInput, model_output: ModelOutput, *args, **kwargs
     ):
-        self._model_output_dict[model_input.id] = model_output
+        self._model_output_dict[str(model_input.id)] = model_output
 
     def retrieve_model_input(self, model_input_id: str, *args, **kwargs):
         if model_input_id in self._model_input_dict:
@@ -58,3 +58,4 @@ class InMemoryDatabaseMgr(IDatabaseMgr):
     def retrieve_model_output(self, model_input_id: str, *args, **kwargs):
         if model_input_id in self._model_output_dict:
             return self._model_output_dict[model_input_id]
+        return None

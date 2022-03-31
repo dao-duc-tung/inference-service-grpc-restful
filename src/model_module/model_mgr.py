@@ -1,4 +1,4 @@
-from model_module.model_io import ModelInput, ModelOutput
+from protobufs.model_pb2 import ModelInput, ModelOutput, ModelOutputMetadata
 
 
 class IModelSource:
@@ -26,7 +26,7 @@ class IModelMgr:
         raise NotImplementedError()
 
 
-class TensorFlowModelMgr(IModelMgr):
+class MockModelMgr(IModelMgr):
     @property
     def is_model_loaded(self) -> bool:
         return True
@@ -36,3 +36,6 @@ class TensorFlowModelMgr(IModelMgr):
 
     def invoke(self, model_input: ModelInput, *args, **kwargs) -> ModelOutput:
         print(f"Invoke model for input {model_input}")
+        model_output_metadata_list = [ModelOutputMetadata(key="accuracy", value="0.9")]
+        model_output = ModelOutput(id=1, metadata=model_output_metadata_list)
+        return model_output

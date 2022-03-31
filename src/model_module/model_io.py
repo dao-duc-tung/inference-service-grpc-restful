@@ -7,10 +7,12 @@ class ModelIo:
         temp_metadata = []
         metadata = model_input.metadata
         for item in metadata:
-            temp_metadata.append({
-                "key": item.key,
-                "value": item.value,
-            })
+            temp_metadata.append(
+                {
+                    "key": item.key,
+                    "value": item.value,
+                }
+            )
 
         d = {
             "id": model_input.id,
@@ -25,10 +27,12 @@ class ModelIo:
         temp_metadata = []
         metadata = model_output.metadata
         for item in metadata:
-            temp_metadata.append({
-                "key": item.key,
-                "value": item.value,
-            })
+            temp_metadata.append(
+                {
+                    "key": item.key,
+                    "value": item.value,
+                }
+            )
 
         d = {
             "id": model_output.id,

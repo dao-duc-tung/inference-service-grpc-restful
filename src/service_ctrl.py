@@ -9,19 +9,18 @@ from markupsafe import escape
 
 import protobufs.invocation_pb2_grpc as invocation_pb2_grpc
 from data_module import IDatabaseMgr, InMemoryDatabaseMgr
-from model_module import (IModelMgr, IModelSource, ModelIo, S3ModelSource,
-                          TensorFlowModelMgr)
+from model_module import IModelMgr, IModelSource, MockModelMgr, ModelIo, S3ModelSource
 from protobufs.invocation_pb2 import InvocationResponse
 from protobufs.model_pb2 import ModelInput, ModelOutput
 
 # GLOBAL VARS
 GRPC_PORT = 8000
 GRPC_WORKERS = 10
-GRPC_STOP_WAIT_TIME = 30 # seconds
+GRPC_STOP_WAIT_TIME = 30  # seconds
 REST_PORT = 5000
 MODEL_S3_URL = "S3_URL"
 
-model_mgt = TensorFlowModelMgr()
+model_mgt = MockModelMgr()
 db_mgt = InMemoryDatabaseMgr()
 s3_model_src = S3ModelSource(MODEL_S3_URL)
 app = flask.Flask(__name__)
@@ -70,7 +69,9 @@ class ServiceCtrl:
             return False
 
     @classmethod
-    def get_invocation_info(cls, model_input_id: str, *args, **kwargs) -> Tuple[ModelInput, ModelOutput]:
+    def get_invocation_info(
+        cls, model_input_id: str, *args, **kwargs
+    ) -> Tuple[ModelInput, ModelOutput]:
         try:
             print(f"ServiceCtrl.get_invocation_info")
             model_input = cls.db_mgt.retrieve_model_input(model_input_id)
@@ -79,7 +80,8 @@ class ServiceCtrl:
             return model_input, model_output
         except Exception as ex:
             print(f"ServiceCtrl.get_invocation_info failed: Exception={ex}")
-            return None
+            return (None, None)
+
 
 # Init ServiceCtrl
 if not ServiceCtrl.initialize(model_mgt, db_mgt):
@@ -89,6 +91,7 @@ if not ServiceCtrl.load_model(s3_model_src):
     exit()
 
 # gRPC API Definition
+
 
 class InvocationServiceStatus:
     OK = "OK"
@@ -109,6 +112,7 @@ class InvocationService(invocation_pb2_grpc.InvocationServicer):
                 status=InvocationServiceStatus.ERROR,
                 message=str(ex),
             )
+
 
 def serve_InvocationService():
     interceptors = [ExceptionToStatusInterceptor()]
@@ -133,37 +137,46 @@ def serve_InvocationService():
     signal(SIGTERM, handle_sigterm)
     # server.wait_for_termination()
 
+
 # RESTful API Definition
 @app.route("/", methods=["GET"])
 def ping():
     health = ServiceCtrl.db_mgt.is_connected and ServiceCtrl.model_mgt.is_model_loaded
     status = 200 if health else 404
-    return flask.Response(response="Welcome!\n", status=status, mimetype="application/json")
+    return flask.Response(
+        response="Welcome!\n", status=status, mimetype="application/json"
+    )
 
 
 @app.route("/get-invocation-info/<input_id>", methods=["GET"])
 def get_invocation_info(input_id):
     try:
         print(f"get_invocation_info: input_id={input_id}")
-        model_input_id = escape(input_id)
+        model_input_id = str(escape(input_id))
         model_input, model_output = ServiceCtrl.get_invocation_info(model_input_id)
-        input_dict = ModelIo.model_input_to_dict(model_input)
-        output_dict = ModelIo.model_output_to_dict(model_output)
-        response_dict = {
-            "input": input_dict,
-            "output": output_dict,
-        }
-        print(f"get_invocation_info: response_dict={response_dict}")
+
+        if type(model_input) == ModelInput:
+            input_dict = ModelIo.model_input_to_dict(model_input)
+            output_dict = {}
+            if type(model_output) == ModelOutput:
+                output_dict = ModelIo.model_output_to_dict(model_output)
+            response_dict = {
+                "model_input": input_dict,
+                "model_output": output_dict,
+            }
+            print(f"get_invocation_info: response_dict={response_dict}")
+        else:
+            response_dict = {"message": f"Input id={model_input_id} not found."}
 
         response = flask.make_response(flask.jsonify(response_dict), 200)
     except Exception as ex:
         print(f"get_invocation_info: Exception={ex}")
-        response_dict = {"error": str(ex)}
+        response_dict = {"message": str(ex)}
         response = flask.make_response(flask.jsonify(response_dict), 500)
 
     response.headers["Content-Type"] = "application/json"
-    print(f"get_invocation_info: response={response}")
     return response
+
 
 def run_service():
     serve_InvocationService()
