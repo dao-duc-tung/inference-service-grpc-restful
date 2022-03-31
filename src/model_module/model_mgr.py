@@ -14,7 +14,7 @@ class S3ModelSource(IModelSource):
         return s
 
 
-class IModelMgt:
+class IModelMgr:
     @property
     def is_model_loaded(self) -> bool:
         raise NotImplementedError()
@@ -26,7 +26,7 @@ class IModelMgt:
         raise NotImplementedError()
 
 
-class TensorFlowModelMgt(IModelMgt):
+class TensorFlowModelMgr(IModelMgr):
     @property
     def is_model_loaded(self) -> bool:
         return True

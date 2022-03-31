@@ -1,3 +1,3 @@
 from .model_io import ModelInput, ModelOutput
-from .model_mgt import (IModelMgt, IModelSource, S3ModelSource,
-                        TensorFlowModelMgt)
+from .model_mgr import (IModelMgr, IModelSource, S3ModelSource,
+                        TensorFlowModelMgr)

@@ -1,7 +1,7 @@
 from model_module.model_io import ModelInput, ModelOutput
 
 
-class IDatabaseMgt:
+class IDatabaseMgr:
     @property
     def is_connected(self) -> bool:
         raise NotImplementedError()
@@ -27,7 +27,7 @@ class IDatabaseMgt:
         raise NotImplementedError()
 
 
-class InMemoryDatabaseMgt(IDatabaseMgt):
+class InMemoryDatabaseMgr(IDatabaseMgr):
     @property
     def is_connected(self) -> bool:
         return True

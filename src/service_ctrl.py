@@ -3,25 +3,25 @@ from typing import Tuple
 import flask
 from markupsafe import escape
 
-from data_module import IDatabaseMgt, InMemoryDatabaseMgt
-from model_module import (IModelMgt, IModelSource, ModelInput, ModelOutput,
-                          S3ModelSource, TensorFlowModelMgt)
+from data_module import IDatabaseMgr, InMemoryDatabaseMgr
+from model_module import (IModelMgr, IModelSource, ModelInput, ModelOutput,
+                          S3ModelSource, TensorFlowModelMgr)
 
 # GLOBAL VARS
-model_mgt = TensorFlowModelMgt()
-db_mgt = InMemoryDatabaseMgt()
+model_mgt = TensorFlowModelMgr()
+db_mgt = InMemoryDatabaseMgr()
 S3_URL = "S3_URL"
 s3_model_src = S3ModelSource(S3_URL)
 app = flask.Flask(__name__)
 
 
 class ServiceCtrl:
-    model_mgt: IModelMgt = None
-    db_mgt: IDatabaseMgt = None
+    model_mgt: IModelMgr = None
+    db_mgt: IDatabaseMgr = None
     initialized: bool = False
 
     @classmethod
-    def initialize(cls, model_mgt: IModelMgt, db_mgt: IDatabaseMgt):
+    def initialize(cls, model_mgt: IModelMgr, db_mgt: IDatabaseMgr):
         cls.model_mgt = model_mgt
         cls.db_mgt = db_mgt
         cls.db_mgt.connect()

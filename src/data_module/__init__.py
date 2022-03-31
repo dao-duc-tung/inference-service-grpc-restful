@@ -1,1 +1,1 @@
-from .db_ctrl import IDatabaseMgt, InMemoryDatabaseMgt
+from .db_mgr import IDatabaseMgr, InMemoryDatabaseMgr
