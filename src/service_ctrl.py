@@ -7,12 +7,12 @@ import grpc
 from grpc_interceptor import ExceptionToStatusInterceptor
 from markupsafe import escape
 
-import invocation_pb2_grpc as invocation_pb2_grpc
+import protobufs.invocation_pb2_grpc as invocation_pb2_grpc
 from data_module import IDatabaseMgr, InMemoryDatabaseMgr
 from model_module import (IModelMgr, IModelSource, ModelIo, S3ModelSource,
                           TensorFlowModelMgr)
-from invocation_pb2 import (InvocationResponse, ModelInput,
-                                         ModelOutput)
+from protobufs.invocation_pb2 import InvocationResponse
+from protobufs.model_pb2 import ModelInput, ModelOutput
 
 # GLOBAL VARS
 GRPC_PORT = 8000
@@ -167,7 +167,7 @@ def get_invocation_info(input_id):
 
 def run_service():
     serve_InvocationService()
-    app.run(host="0.0.0.0", port=REST_PORT)
+    app.run(host="localhost", port=REST_PORT)
 
 
 if __name__ == "__main__":

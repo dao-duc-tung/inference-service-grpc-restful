@@ -1,4 +1,4 @@
-from invocation_pb2 import ModelInput, ModelOutput
+from protobufs.model_pb2 import ModelInput, ModelOutput
 
 
 class ModelIo:

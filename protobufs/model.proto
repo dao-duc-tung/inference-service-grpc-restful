@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package model.v1;
+
+message ModelInputMetadata {
+    string key = 1;
+    string value = 2;
+}
+
+message ModelInput {
+    int32 id = 1;
+    string content = 2;
+    repeated ModelInputMetadata metadata = 3;
+}
+
+message ModelOutputMetadata {
+    string key = 1;
+    string value = 2;
+}
+
+message ModelOutput {
+    int32 id = 1;
+    repeated ModelOutputMetadata metadata = 2;
+}

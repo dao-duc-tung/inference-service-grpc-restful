@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import invocation_pb2 as invocation__pb2
+from protobufs import invocation_pb2 as protobufs_dot_invocation__pb2
 
 
 class InvocationStub(object):
@@ -16,8 +16,8 @@ class InvocationStub(object):
         """
         self.Invoke = channel.unary_unary(
                 '/invocation.v1.Invocation/Invoke',
-                request_serializer=invocation__pb2.InvocationRequest.SerializeToString,
-                response_deserializer=invocation__pb2.InvocationResponse.FromString,
+                request_serializer=protobufs_dot_invocation__pb2.InvocationRequest.SerializeToString,
+                response_deserializer=protobufs_dot_invocation__pb2.InvocationResponse.FromString,
                 )
 
 
@@ -35,8 +35,8 @@ def add_InvocationServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Invoke': grpc.unary_unary_rpc_method_handler(
                     servicer.Invoke,
-                    request_deserializer=invocation__pb2.InvocationRequest.FromString,
-                    response_serializer=invocation__pb2.InvocationResponse.SerializeToString,
+                    request_deserializer=protobufs_dot_invocation__pb2.InvocationRequest.FromString,
+                    response_serializer=protobufs_dot_invocation__pb2.InvocationResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -60,7 +60,7 @@ class Invocation(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/invocation.v1.Invocation/Invoke',
-            invocation__pb2.InvocationRequest.SerializeToString,
-            invocation__pb2.InvocationResponse.FromString,
+            protobufs_dot_invocation__pb2.InvocationRequest.SerializeToString,
+            protobufs_dot_invocation__pb2.InvocationResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
