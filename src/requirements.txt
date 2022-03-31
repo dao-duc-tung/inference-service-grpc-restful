@@ -1,5 +1,6 @@
-grpc-interceptor ~= 0.12.0
-grpcio-tools ~= 1.30
-flask ~= 1.1
-Jinja2 ~= 2.11
-pytest ~= 5.4
+grpcio
+grpc-interceptor
+grpcio-tools
+flask
+Jinja2
+pytest

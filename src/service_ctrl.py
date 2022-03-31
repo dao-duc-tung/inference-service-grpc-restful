@@ -1,3 +1,4 @@
+import argparse
 from concurrent import futures
 from signal import SIGTERM, signal
 from typing import Tuple
@@ -15,7 +16,7 @@ from protobufs.model_pb2 import ModelInput, ModelOutput
 
 # GLOBAL VARS
 GRPC_PORT = 8000
-GRPC_WORKERS = 10
+GRPC_WORKERS = 4
 GRPC_STOP_WAIT_TIME = 30  # seconds
 REST_PORT = 5000
 MODEL_S3_URL = "S3_URL"
@@ -114,14 +115,14 @@ class InvocationService(invocation_pb2_grpc.InvocationServicer):
             )
 
 
-def serve_InvocationService():
+def serve_InvocationService(grpc_port):
     interceptors = [ExceptionToStatusInterceptor()]
     server = grpc.server(
         futures.ThreadPoolExecutor(max_workers=GRPC_WORKERS),
         interceptors=interceptors,
     )
     invocation_pb2_grpc.add_InvocationServicer_to_server(InvocationService(), server)
-    server.add_insecure_port(f"[::]:{GRPC_PORT}")
+    server.add_insecure_port(f"[::]:{grpc_port}")
 
     server.start()
     print("InvocationService started")
@@ -178,10 +179,20 @@ def get_invocation_info(input_id):
     return response
 
 
-def run_service():
-    serve_InvocationService()
-    app.run(host="localhost", port=REST_PORT)
+def run_service(grpc_port, rest_port):
+    serve_InvocationService(grpc_port)
+    # Must use 0.0.0.0 for docker
+    app.run(host="0.0.0.0", port=rest_port)
 
 
 if __name__ == "__main__":
-    run_service()
+    # Use ArgumentParser with Docker ENTRYPOINT
+    # https://stackoverflow.com/a/67868029
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--grpc-port", type=str, required=False, default=GRPC_PORT)
+    parser.add_argument("--rest-port", type=str, required=False, default=REST_PORT)
+    args = vars(parser.parse_args())
+    print(args)
+    grpc_port = args["grpc_port"]
+    rest_port = args["rest_port"]
+    run_service(grpc_port, rest_port)
