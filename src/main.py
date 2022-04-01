@@ -21,6 +21,9 @@ def run_service(grpc_port, rest_port):
 if __name__ == "__main__":
     # Define resources
     MODEL_PATH = "file://../models/tf_face_det"
+    # MODEL_PATH = (
+    #     "https://tungdao-public.s3.ap-southeast-1.amazonaws.com/tf_face_det.zip"
+    # )
     model_mgt = TensorFlowModelMgr()
     db_mgt = RedisDatabaseMgr()
     s3_model_src = PathModelSource(MODEL_PATH)

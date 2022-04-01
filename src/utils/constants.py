@@ -1,6 +1,13 @@
+from pathlib import Path
+
+
 class AppConst:
     APP_NAME = "aaqua_sys"
     LOG_FILE = f"{APP_NAME}.log"
+    TMP_DIR = "tmp"
+
+
+Path(AppConst.TMP_DIR).mkdir(parents=True, exist_ok=True)
 
 
 class RestApiDefinition:

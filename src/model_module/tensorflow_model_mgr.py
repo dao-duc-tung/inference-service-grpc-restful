@@ -1,4 +1,5 @@
 import logging
+import time
 
 import cv2
 import numpy as np
@@ -6,7 +7,7 @@ from PIL import Image
 from protobufs.model_pb2 import ModelInput, ModelOutput, ModelOutputMetadata
 
 from model_module.path_model_source import PathModelSource
-from model_module.utils import ImgUtils
+from model_module.utils import FileUtils, ImgUtils
 from utils import AppConst
 
 from .i_model_mgr import IModelMgr
@@ -36,7 +37,7 @@ class TensorFlowModelMgr(IModelMgr):
             if model_source.path_type == PathModelSource.LOCALFILE:
                 self._model = self._load_model_from_local(model_source.get_raw_path())
             elif model_source.path_type == PathModelSource.URL:
-                self._model = self._load_model_from_url(model_source.get_raw_path())
+                self._model = self._load_model_from_url(model_source.path)
             else:
                 raise NotImplementedError()
             logger.info(f"TensorFlowModelMgr.load_model done")
@@ -62,7 +63,18 @@ class TensorFlowModelMgr(IModelMgr):
             logger.error(f"TensorFlowModelMgr.invoke: {ex}")
 
     def _load_model_from_url(self, url: str):
-        raise NotImplementedError()
+        """
+        Supports zip file only
+        """
+        current_time = int(time.time())
+        out_file = f"{AppConst.TMP_DIR}/tf_model_{current_time}.zip"
+        FileUtils.download_object(url, out_file)
+
+        out_dir = f"{AppConst.TMP_DIR}/tf_model_{current_time}"
+        FileUtils.extract_zip(out_file, out_dir)
+
+        model = self._load_model_from_local(out_dir)
+        return model
 
     def _load_model_from_local(self, local_path: str):
         import tensorflow as tf

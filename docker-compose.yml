@@ -4,7 +4,7 @@ services:
   tester:
     image: ${DOCKER_IMG}
     container_name: aaqua_tester
-    command: pytest /service/src/ ${PYTEST_OPT}
+    command: pytest /service/src/model_module/tests/test_tensorflow_model_mgr.py ${PYTEST_OPT}
     environment:
       SERVER_HOST_NAME: server
       DB_HOST_NAME: database

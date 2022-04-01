@@ -131,3 +131,4 @@ dmypy.json
 # Custom
 models
 images
+tmp

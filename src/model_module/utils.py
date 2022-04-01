@@ -1,5 +1,9 @@
 import base64
 import io
+from pathlib import Path
+import urllib.request
+import zipfile
+
 from protobufs.model_pb2 import ModelInput, ModelOutput
 
 
@@ -62,3 +66,19 @@ class ImgUtils:
         msg = base64.b64decode(base64_str)
         buf = io.BytesIO(msg)
         return buf
+
+
+class FileUtils:
+    @staticmethod
+    def download_object(s3_url: str, out_file: str):
+        with urllib.request.urlopen(s3_url) as f:
+            with open(out_file, "wb") as o:
+                o.write(f.read())
+
+    @staticmethod
+    def extract_zip(path: str, out_dir: str):
+        out_dir_path = Path(out_dir)
+        out_dir_path.mkdir(parents=True, exist_ok=True)
+
+        with zipfile.ZipFile(path, "r") as z:
+            z.extractall(out_dir)
