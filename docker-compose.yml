@@ -7,7 +7,7 @@ services:
     command: pytest /service/src/ ${PYTEST_OPT}
     environment:
       SERVER_HOST_NAME: server
-      DB_HOST_NAME: ${DB_HOST_NAME}
+      DB_HOST_NAME: database
       DB_PORT: ${DB_PORT}
       GRPC_PORT: ${GRPC_PORT}
       REST_PORT: ${REST_PORT}
@@ -31,10 +31,10 @@ services:
     networks:
       - aaqua_net
     depends_on:
-      - db
+      - database
 
-  db:
-    container_name: ${DB_HOST_NAME}
+  database:
+    container_name: aaqua_db
     image: redis:6.2.6
     command: ["redis-server", "/redis.conf"]
     volumes:

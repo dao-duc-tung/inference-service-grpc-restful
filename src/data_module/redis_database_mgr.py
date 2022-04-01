@@ -4,10 +4,11 @@ import os
 import redis
 from model_module.utils import ModelUtils
 from protobufs.model_pb2 import ModelInput, ModelOutput
+from utils import DefaultApiValues
 
 from .i_database_mgr import IDatabaseMgr
 
-DB_HOST_NAME = os.getenv("DB_HOST_NAME", "aaqua_db")
+DB_HOST_NAME = os.getenv("DB_HOST_NAME", DefaultApiValues.DB_HOST_NAME)
 DB_PORT = os.getenv("DB_PORT", 6379)
 import logging
 

@@ -1,6 +1,7 @@
 import json
 import os
 import time
+from urllib.error import HTTPError
 from urllib.request import urlopen
 
 import grpc
@@ -9,10 +10,11 @@ from model_module.utils import ImgUtils
 from protobufs.invocation_pb2 import InvocationRequest
 from protobufs.invocation_pb2_grpc import InvocationStub
 from protobufs.model_pb2 import ModelInput, ModelInputMetadata
+from utils import DefaultApiValues, RestApiDefinition
 
-SERVER_HOST_NAME = os.getenv("SERVER_HOST_NAME", "server")
-GRPC_PORT = os.getenv("GRPC_PORT", "8000")
-REST_PORT = os.getenv("REST_PORT", "5000")
+SERVER_HOST_NAME = os.getenv("SERVER_HOST_NAME", DefaultApiValues.SERVER_HOST_NAME)
+GRPC_PORT = os.getenv("GRPC_PORT", DefaultApiValues.GRPC_PORT)
+REST_PORT = os.getenv("REST_PORT", DefaultApiValues.REST_PORT)
 WAIT_TIME = 0.2
 
 
@@ -30,13 +32,12 @@ def test_two_apis_bad_content(id, content, metadata):
     response = client.Invoke(request)
     time.sleep(WAIT_TIME)
 
-    response = (
-        urlopen(f"http://{SERVER_HOST_NAME}:{REST_PORT}/get-invocation-info/{id}")
-        .read()
-        .decode("utf-8")
-    )
-    response_dict = json.loads(response)
-    assert "message" in response_dict
+    try:
+        urlopen(
+            f"http://{SERVER_HOST_NAME}:{REST_PORT}/{RestApiDefinition.GET_INVOCATION_INFO}/{id}"
+        )
+    except HTTPError as ex:
+        assert ex.code == 404
 
 
 @pytest.mark.slow
@@ -53,7 +54,9 @@ def test_two_apis_good_content(id, img_path, metadata):
     time.sleep(WAIT_TIME)
 
     response = (
-        urlopen(f"http://{SERVER_HOST_NAME}:{REST_PORT}/get-invocation-info/{id}")
+        urlopen(
+            f"http://{SERVER_HOST_NAME}:{REST_PORT}/{RestApiDefinition.GET_INVOCATION_INFO}/{id}"
+        )
         .read()
         .decode("utf-8")
     )

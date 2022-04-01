@@ -1,13 +1,14 @@
+import os
+
 import grpc
 import pytest
 from protobufs.invocation_pb2 import InvocationRequest
 from protobufs.invocation_pb2_grpc import InvocationStub
 from protobufs.model_pb2 import ModelInput, ModelInputMetadata
+from utils import DefaultApiValues
 
-import os
-
-SERVER_HOST_NAME = os.getenv("SERVER_HOST_NAME", "server")
-GRPC_PORT = os.getenv("GRPC_PORT", "8000")
+SERVER_HOST_NAME = os.getenv("SERVER_HOST_NAME", DefaultApiValues.SERVER_HOST_NAME)
+GRPC_PORT = os.getenv("GRPC_PORT", DefaultApiValues.GRPC_PORT)
 
 
 @pytest.mark.slow

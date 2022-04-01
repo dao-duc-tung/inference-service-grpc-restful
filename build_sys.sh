@@ -1,20 +1,13 @@
 #!/bin/bash
 
+# TEST in ["none", "test"]
 export TEST=$1
-export TEST_SLOW=$2
+# PYTEST_OPT in ["", "--runslow"]
+export PYTEST_OPT=$2
 
-export PYTEST_OPT=""
-
-if [ "$TEST" == "1" ]
+if [ "$TEST" != "test" ]
 then
-    export TEST=test
-else
-    export TEST=no
-fi
-
-if [ "$TEST_SLOW" == "1" ]
-then
-    export PYTEST_OPT="${PYTEST_OPT} --runslow"
+    export TEST=none
 fi
 
 export DOCKER_IMG=aaqua_sys_img
