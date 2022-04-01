@@ -2,28 +2,22 @@ version: "3.3"
 
 services:
   tester:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        GRPC_PORT: 8000
-        REST_PORT: 5000
+    image: ${DOCKER_IMG}
+    container_name: aaqua_tester
     command: pytest /service/src/
     networks:
       - aaqua_net
     depends_on:
       - server
+    profiles:
+      - test
 
   server:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        GRPC_PORT: 8000
-        REST_PORT: 5000
-    command: python /service/src/main.py
+    image: ${DOCKER_IMG}
+    container_name: aaqua_server
+    command: python /service/src/main.py --grpc-port=${GRPC_PORT} --rest-port=${REST_PORT}
     ports:
-      - 5000:5000
+      - ${REST_PORT}:${REST_PORT}
     networks:
       - aaqua_net
 
