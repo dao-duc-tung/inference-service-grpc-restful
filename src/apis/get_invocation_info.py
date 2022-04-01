@@ -14,10 +14,11 @@ flask_app = flask.Flask(__name__)
 
 @flask_app.route("/", methods=["GET"])
 def ping():
-    health = ServiceCtrl.db_mgt.is_connected and ServiceCtrl.model_mgt.is_model_loaded
-    status = 200 if health else 404
+    health = ServiceCtrl.db_mgt.is_connected
+    message = "ready" if health else "not ready"
+    status = 200
     return flask.Response(
-        response="Welcome!\n", status=status, mimetype="application/json"
+        response=f"{message}!\n", status=status, mimetype="application/json"
     )
 
 
@@ -35,13 +36,12 @@ def get_invocation_info(input_id):
                 "model_input": model_input_dict,
                 "model_output": model_output_dict,
             }
-            logger.info(f"get_invocation_info: response_dict={response_dict}")
         else:
             response_dict = {"message": f"Input id={model_input_id} not found."}
 
         response = flask.make_response(flask.jsonify(response_dict), 200)
     except Exception as ex:
-        logger.error(f"get_invocation_info: Exception={ex}")
+        logger.error(f"get_invocation_info: {ex}")
         response_dict = {"message": str(ex)}
         response = flask.make_response(flask.jsonify(response_dict), 500)
 

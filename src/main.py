@@ -3,7 +3,8 @@ import logging
 
 from apis import ServiceCtrl, flask_app, serve_InvocationService
 from data_module import RedisDatabaseMgr
-from model_module import MockModelMgr, PathModelSource
+from model_module import PathModelSource
+from model_module.tensorflow_model_mgr import TensorFlowModelMgr
 from utils import AppConst, setup_logger
 
 setup_logger()
@@ -13,19 +14,18 @@ logger.info(f"NEW SESSION")
 # Global vars
 GRPC_PORT = 8000
 REST_PORT = 5000
-MODEL_S3_URL = "S3_URL"
+MODEL_PATH = "file://../models/tf_face_det"
 
-model_mgt = MockModelMgr()
+model_mgt = TensorFlowModelMgr()
 db_mgt = RedisDatabaseMgr()
-s3_model_src = PathModelSource(MODEL_S3_URL)
+s3_model_src = PathModelSource(MODEL_PATH)
 
 
 # Init ServiceCtrl
 if not ServiceCtrl.initialize(model_mgt, db_mgt):
-    exit()
+    exit(1)
 
-if not ServiceCtrl.load_model(s3_model_src):
-    exit()
+ServiceCtrl.set_model_source(s3_model_src)
 
 
 def run_service(grpc_port, rest_port):

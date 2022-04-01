@@ -2,13 +2,12 @@ import logging
 
 import cv2
 import numpy as np
-import tensorflow as tf
 from PIL import Image
-from model_module.utils import ImgUtils
 from protobufs.model_pb2 import ModelInput, ModelOutput, ModelOutputMetadata
-from utils import AppConst
 
 from model_module.path_model_source import PathModelSource
+from model_module.utils import ImgUtils
+from utils import AppConst
 
 from .i_model_mgr import IModelMgr
 
@@ -25,36 +24,49 @@ class TensorFlowModelMgr(IModelMgr):
 
     @property
     def is_model_loaded(self) -> bool:
-        return True
+        return self._model != None
 
     @property
     def model(self):
         return self._model
 
     def load_model(self, model_source: PathModelSource, *args, **kwargs):
-        logger.info(f"Load model from {model_source}")
-        if model_source.path_type == PathModelSource.LOCALFILE:
-            self._model = self._load_model_from_local(model_source.get_raw_path())
-        elif model_source.path_type == PathModelSource.URL:
-            self._model = self._load_model_from_url(model_source.get_raw_path())
-        else:
-            raise NotImplementedError()
+        try:
+            logger.info(f"TensorFlowModelMgr.load_model: model_source={model_source}")
+            if model_source.path_type == PathModelSource.LOCALFILE:
+                self._model = self._load_model_from_local(model_source.get_raw_path())
+            elif model_source.path_type == PathModelSource.URL:
+                self._model = self._load_model_from_url(model_source.get_raw_path())
+            else:
+                raise NotImplementedError()
+            logger.info(f"TensorFlowModelMgr.load_model done")
+        except Exception as ex:
+            logger.error(f"TensorFlowModelMgr.load_model: {ex}")
 
     def invoke(self, model_input: ModelInput, *args, **kwargs) -> ModelOutput:
-        logger.info(f"Invoke model for input id={model_input.id}")
+        try:
+            logger.info(f"TensorFlowModelMgr.invoke model_input.id={model_input.id}")
 
-        img_pil = self._base64_to_pil_image(model_input.content)
-        orig_img = np.array(img_pil)
+            if not self.is_model_loaded:
+                raise Exception(f"TensorFlowModelMgr.invoke: Model is not loaded.")
 
-        inp = self._prepare_input(orig_img)
-        preds = self._predict(inp)
-        out = self._prepare_output(preds, orig_img, model_input)
-        return out
+            img_pil = self._base64_to_pil_image(model_input.content)
+            orig_img = np.array(img_pil)
+
+            inp = self._prepare_input(orig_img)
+            preds = self._predict(inp)
+            out = self._prepare_output(preds, orig_img, model_input)
+            logger.info(f"TensorFlowModelMgr.invoke done")
+            return out
+        except Exception as ex:
+            logger.error(f"TensorFlowModelMgr.invoke: {ex}")
 
     def _load_model_from_url(self, url: str):
         raise NotImplementedError()
 
     def _load_model_from_local(self, local_path: str):
+        import tensorflow as tf
+
         model = tf.keras.models.load_model(local_path)
         return model
 

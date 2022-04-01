@@ -14,7 +14,7 @@ logger = logging.getLogger(AppConst.APP_NAME)
 
 # Global vars
 GRPC_WORKERS = 4
-GRPC_STOP_WAIT_TIME = 30  # seconds
+GRPC_STOP_WAIT_TIME = 5  # seconds
 
 
 class InvocationServiceStatus:
@@ -25,13 +25,15 @@ class InvocationServiceStatus:
 class InvocationService(invocation_pb2_grpc.InvocationServicer):
     def Invoke(self, request, context):
         try:
-            logger.info(f"InvocationService.Invoke: request={request}")
+            logger.info(f"InvocationService.Invoke: request={str(request)[:50]}")
             model_input = request.model_input
-            logger.info(f"InvocationService.Invoke: model_input={model_input}")
-            ServiceCtrl.invoke_model(model_input)
-            return InvocationResponse(status=InvocationServiceStatus.OK)
+            logger.info(f"InvocationService.Invoke: model_input.id={model_input.id}")
+            if ServiceCtrl.invoke_model(model_input):
+                return InvocationResponse(status=InvocationServiceStatus.OK)
+            else:
+                return InvocationResponse(status=InvocationServiceStatus.ERROR)
         except Exception as ex:
-            logger.error(f"InvocationService.Invoke: Exception={ex}")
+            logger.error(f"InvocationService.Invoke: {ex}")
             return InvocationResponse(
                 status=InvocationServiceStatus.ERROR,
                 message=str(ex),

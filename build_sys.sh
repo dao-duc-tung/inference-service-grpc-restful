@@ -1,11 +1,20 @@
 #!/bin/bash
 
 export TEST=$1
+export TEST_SLOW=$2
+
+export PYTEST_OPT=""
+
 if [ "$TEST" == "1" ]
 then
     export TEST=test
 else
     export TEST=no
+fi
+
+if [ "$TEST_SLOW" == "1" ]
+then
+    export PYTEST_OPT="${PYTEST_OPT} --runslow"
 fi
 
 export DOCKER_IMG=aaqua_sys_img

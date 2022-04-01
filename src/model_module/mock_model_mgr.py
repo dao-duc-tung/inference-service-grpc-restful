@@ -18,7 +18,7 @@ class MockModelMgr(IModelMgr):
         logger.info(f"Load model from {model_source}")
 
     def invoke(self, model_input: ModelInput, *args, **kwargs) -> ModelOutput:
-        logger.info(f"Invoke model for input {model_input}")
+        logger.info(f"Invoke model for model_input.id={model_input.id}")
         model_output_metadata_list = [ModelOutputMetadata(key="accuracy", value="0.9")]
         model_output = ModelOutput(id=1, metadata=model_output_metadata_list)
         return model_output

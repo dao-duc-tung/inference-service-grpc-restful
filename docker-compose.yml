@@ -4,7 +4,7 @@ services:
   tester:
     image: ${DOCKER_IMG}
     container_name: aaqua_tester
-    command: pytest /service/src/tests/integration/test_two_apis.py
+    command: pytest /service/src/ ${PYTEST_OPT}
     environment:
       SERVER_HOST_NAME: server
       DB_HOST_NAME: ${DB_HOST_NAME}
@@ -21,6 +21,7 @@ services:
     container_name: aaqua_server
     command: python /service/src/main.py --grpc-port=${GRPC_PORT} --rest-port=${REST_PORT}
     ports:
+      - ${GRPC_PORT}:${GRPC_PORT}
       - ${REST_PORT}:${REST_PORT}
     networks:
       - aaqua_net
