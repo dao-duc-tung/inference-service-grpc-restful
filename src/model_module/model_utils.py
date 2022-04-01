@@ -1,7 +1,7 @@
 from protobufs.model_pb2 import ModelInput, ModelOutput
 
 
-class ModelIo:
+class ModelUtils:
     @staticmethod
     def model_input_to_dict(model_input: ModelInput) -> dict:
         temp_metadata = []

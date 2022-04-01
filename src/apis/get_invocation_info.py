@@ -1,6 +1,6 @@
 import flask
 from markupsafe import escape
-from model_module import ModelIo
+from model_module import ModelUtils
 from protobufs.model_pb2 import ModelInput, ModelOutput
 
 from .service_ctrl import ServiceCtrl

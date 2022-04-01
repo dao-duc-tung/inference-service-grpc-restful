@@ -1,2 +1,2 @@
-from .model_io import ModelIo
-from .model_mgr import IModelMgr, IModelSource, S3ModelSource, MockModelMgr
+from .model_utils import ModelUtils
+from .mock_model_mgr import IModelMgr, IModelSource, S3ModelSource, MockModelMgr

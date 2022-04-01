@@ -2,9 +2,9 @@ import json
 import os
 
 import redis
-from model_module.model_io import ModelInput, ModelIo, ModelOutput
+from model_module.model_utils import ModelInput, ModelUtils, ModelOutput
 
-from .db_mgr import IDatabaseMgr
+from .i_database_mgr import IDatabaseMgr
 
 DB_HOST_NAME = os.getenv("DB_HOST_NAME", "aaqua_db")
 DB_PORT = os.getenv("DB_PORT", 6379)
@@ -55,7 +55,7 @@ class RedisDatabaseMgr(IDatabaseMgr):
 
     def save_model_input(self, model_input: ModelInput, *args, **kwargs):
         key = str(model_input.id)
-        value = json.dumps(ModelIo.model_input_to_dict(model_input))
+        value = json.dumps(ModelUtils.model_input_to_dict(model_input))
         self._model_input_conn.set(key, value)
         self._model_input_conn.save()
 
@@ -63,7 +63,7 @@ class RedisDatabaseMgr(IDatabaseMgr):
         self, model_input: ModelInput, model_output: ModelOutput, *args, **kwargs
     ):
         key = str(model_input.id)
-        value = json.dumps(ModelIo.model_output_to_dict(model_output))
+        value = json.dumps(ModelUtils.model_output_to_dict(model_output))
         self._model_output_conn.set(key, value)
         self._model_output_conn.save()
 

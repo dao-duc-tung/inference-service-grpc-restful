@@ -1,6 +1,6 @@
-from model_module.model_io import ModelInput, ModelOutput
+from model_module.model_utils import ModelInput, ModelOutput
 
-from .db_mgr import IDatabaseMgr
+from .i_database_mgr import IDatabaseMgr
 
 
 class InMemoryDatabaseMgr(IDatabaseMgr):

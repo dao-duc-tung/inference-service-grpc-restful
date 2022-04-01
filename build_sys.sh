@@ -7,7 +7,7 @@ then
 else
     export TEST=no
 fi
-echo $TEST
+
 export DOCKER_IMG=aaqua_sys_img
 export GRPC_PORT=8000
 export REST_PORT=5000
