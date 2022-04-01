@@ -1,3 +1,5 @@
+import base64
+import io
 from protobufs.model_pb2 import ModelInput, ModelOutput
 
 
@@ -40,3 +42,23 @@ class ModelUtils:
         }
 
         return d
+
+
+class ImgUtils:
+    @staticmethod
+    def img_path_to_base64_str(img_path: str) -> str:
+        msg = ""
+        with open(img_path, "rb") as f:
+            msg = ImgUtils.bytes_str_to_base64_str(f.read())
+        return msg
+
+    @staticmethod
+    def bytes_str_to_base64_str(img_bytes: str) -> str:
+        msg = base64.b64encode(img_bytes)
+        return msg
+
+    @staticmethod
+    def base64_str_to_bytes_io(base64_str: str) -> io.BytesIO:
+        msg = base64.b64decode(base64_str)
+        buf = io.BytesIO(msg)
+        return buf

@@ -1,2 +1,3 @@
 class IModelSource:
-    pass
+    def get_raw_path(self) -> str:
+        raise NotImplementedError()

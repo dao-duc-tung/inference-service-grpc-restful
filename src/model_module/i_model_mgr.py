@@ -8,6 +8,10 @@ class IModelMgr:
     def is_model_loaded(self) -> bool:
         raise NotImplementedError()
 
+    @property
+    def model(self):
+        raise NotImplementedError()
+
     def load_model(self, model_source: IModelSource, *args, **kwargs):
         raise NotImplementedError()
 

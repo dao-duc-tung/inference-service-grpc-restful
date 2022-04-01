@@ -29,6 +29,12 @@ class PathModelSource(IModelSource):
         s = f"path={self.path}"
         return s
 
+    def get_raw_path(self) -> str:
+        colon_idx = self._get_colon_idx()
+        raw_start_idx = colon_idx + 3  # 3 for '://'
+        raw_path = self.path[raw_start_idx:]
+        return raw_path
+
     def _get_colon_idx(self) -> int:
         colon_idx = self.path.find(":")
         return colon_idx
@@ -40,9 +46,3 @@ class PathModelSource(IModelSource):
 
         protocol = self.path[:colon_idx]
         return protocol
-
-    def _get_raw_path(self) -> str:
-        colon_idx = self._get_colon_idx()
-        raw_start_idx = colon_idx + 2  # 2 for //
-        raw_path = self.path[raw_start_idx:]
-        return raw_path
