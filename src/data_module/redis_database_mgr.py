@@ -2,7 +2,8 @@ import json
 import os
 
 import redis
-from model_module.model_utils import ModelInput, ModelOutput, ModelUtils
+from model_module.utils import ModelUtils
+from protobufs.model_pb2 import ModelInput, ModelOutput
 
 from .i_database_mgr import IDatabaseMgr
 

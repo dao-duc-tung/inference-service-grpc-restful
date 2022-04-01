@@ -1,4 +1,4 @@
-from model_module.model_utils import ModelInput, ModelOutput
+from protobufs.model_pb2 import ModelInput, ModelOutput
 
 from .i_database_mgr import IDatabaseMgr
 
