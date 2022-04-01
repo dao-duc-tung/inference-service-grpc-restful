@@ -61,7 +61,7 @@ def get_invocation_info(input_id):
             model_input_id
         )
 
-        if model_input_dict != None and model_output_dict != None:
+        if model_input_dict != None:
             response_dict = format_invocation_response_success(
                 model_input_dict, model_output_dict
             )

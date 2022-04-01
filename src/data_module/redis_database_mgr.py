@@ -64,7 +64,6 @@ class RedisDatabaseMgr(IDatabaseMgr):
         key = str(model_input.id)
         value = json.dumps(ModelUtils.model_input_to_dict(model_input))
         self._model_input_conn.set(key, value)
-        self._model_input_conn.save()
 
     def save_model_output(
         self, model_input: ModelInput, model_output: ModelOutput, *args, **kwargs
@@ -72,7 +71,6 @@ class RedisDatabaseMgr(IDatabaseMgr):
         key = str(model_input.id)
         value = json.dumps(ModelUtils.model_output_to_dict(model_output))
         self._model_output_conn.set(key, value)
-        self._model_output_conn.save()
 
     def retrieve_model_input(self, model_input_id: str, *args, **kwargs) -> dict:
         key = model_input_id
@@ -91,3 +89,9 @@ class RedisDatabaseMgr(IDatabaseMgr):
 
         model_output_dict = json.loads(model_output_dict_str)
         return model_output_dict
+
+    def delete_model_input(self, model_input_id: str, *args, **kwargs):
+        self._model_input_conn.delete(model_input_id)
+
+    def delete_model_output(self, model_input_id: str, *args, **kwargs):
+        self._model_output_conn.delete(model_input_id)
