@@ -1,9 +1,12 @@
+import logging
+
 import flask
 from markupsafe import escape
-from model_module import ModelUtils
-from protobufs.model_pb2 import ModelInput, ModelOutput
+from utils import AppConst
 
 from .service_ctrl import ServiceCtrl
+
+logger = logging.getLogger(AppConst.APP_NAME)
 
 # Global vars
 flask_app = flask.Flask(__name__)
@@ -21,7 +24,7 @@ def ping():
 @flask_app.route("/get-invocation-info/<input_id>", methods=["GET"])
 def get_invocation_info(input_id):
     try:
-        print(f"get_invocation_info: input_id={input_id}")
+        logger.info(f"get_invocation_info: input_id={input_id}")
         model_input_id = str(escape(input_id))
         model_input_dict, model_output_dict = ServiceCtrl.get_invocation_info(
             model_input_id
@@ -32,13 +35,13 @@ def get_invocation_info(input_id):
                 "model_input": model_input_dict,
                 "model_output": model_output_dict,
             }
-            print(f"get_invocation_info: response_dict={response_dict}")
+            logger.info(f"get_invocation_info: response_dict={response_dict}")
         else:
             response_dict = {"message": f"Input id={model_input_id} not found."}
 
         response = flask.make_response(flask.jsonify(response_dict), 200)
     except Exception as ex:
-        print(f"get_invocation_info: Exception={ex}")
+        logger.error(f"get_invocation_info: Exception={ex}")
         response_dict = {"message": str(ex)}
         response = flask.make_response(flask.jsonify(response_dict), 500)
 

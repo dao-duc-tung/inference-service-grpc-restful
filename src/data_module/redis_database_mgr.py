@@ -2,12 +2,17 @@ import json
 import os
 
 import redis
-from model_module.model_utils import ModelInput, ModelUtils, ModelOutput
+from model_module.model_utils import ModelInput, ModelOutput, ModelUtils
 
 from .i_database_mgr import IDatabaseMgr
 
 DB_HOST_NAME = os.getenv("DB_HOST_NAME", "aaqua_db")
 DB_PORT = os.getenv("DB_PORT", 6379)
+import logging
+
+from utils import AppConst
+
+logger = logging.getLogger(AppConst.APP_NAME)
 
 
 class RedisDatabaseMgr(IDatabaseMgr):
@@ -32,7 +37,7 @@ class RedisDatabaseMgr(IDatabaseMgr):
             )
             return True
         except Exception as ex:
-            print(f"RedisDatabaseMgr.connect: {ex}")
+            logger.error(f"RedisDatabaseMgr.connect: {ex}")
             return False
 
     def close(self, *args, **kwargs):
@@ -41,7 +46,7 @@ class RedisDatabaseMgr(IDatabaseMgr):
             self._model_output_conn.close()
             return True
         except Exception as ex:
-            print(f"RedisDatabaseMgr.close: {ex}")
+            logger.error(f"RedisDatabaseMgr.close: {ex}")
             return False
 
     def flush_all(self, *args, **kwargs) -> bool:
@@ -50,7 +55,7 @@ class RedisDatabaseMgr(IDatabaseMgr):
             self._model_output_conn.flushdb()
             return True
         except Exception as ex:
-            print(f"RedisDatabaseMgr.flush_all: {ex}")
+            logger.error(f"RedisDatabaseMgr.flush_all: {ex}")
             return False
 
     def save_model_input(self, model_input: ModelInput, *args, **kwargs):
