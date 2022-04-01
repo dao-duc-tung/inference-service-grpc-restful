@@ -11,8 +11,8 @@ from protobufs.invocation_pb2_grpc import InvocationStub
 from protobufs.model_pb2 import ModelInput, ModelInputMetadata
 
 SERVER_HOST_NAME = os.getenv("SERVER_HOST_NAME", "server")
-
-
+GRPC_PORT = os.getenv("GRPC_PORT", "8000")
+REST_PORT = os.getenv("REST_PORT", "5000")
 WAIT_TIME = 0.2
 
 
@@ -25,13 +25,13 @@ def test_two_apis_bad_content(id, content, metadata):
     model_input_metadata_list = [ModelInputMetadata(key=key, value=value)]
     model_input = ModelInput(id=id, content=content, metadata=model_input_metadata_list)
     request = InvocationRequest(model_input=model_input)
-    channel = grpc.insecure_channel(f"{SERVER_HOST_NAME}:8000")
+    channel = grpc.insecure_channel(f"{SERVER_HOST_NAME}:{GRPC_PORT}")
     client = InvocationStub(channel)
     response = client.Invoke(request)
     time.sleep(WAIT_TIME)
 
     response = (
-        urlopen(f"http://{SERVER_HOST_NAME}:5000/get-invocation-info/{id}")
+        urlopen(f"http://{SERVER_HOST_NAME}:{REST_PORT}/get-invocation-info/{id}")
         .read()
         .decode("utf-8")
     )
@@ -47,13 +47,13 @@ def test_two_apis_good_content(id, img_path, metadata):
     base64_str = ImgUtils.img_path_to_base64_str(img_path)
     model_input = ModelInput(id=id, content=base64_str, metadata=metadata)
     request = InvocationRequest(model_input=model_input)
-    channel = grpc.insecure_channel(f"{SERVER_HOST_NAME}:8000")
+    channel = grpc.insecure_channel(f"{SERVER_HOST_NAME}:{GRPC_PORT}")
     client = InvocationStub(channel)
     response = client.Invoke(request)
     time.sleep(WAIT_TIME)
 
     response = (
-        urlopen(f"http://{SERVER_HOST_NAME}:5000/get-invocation-info/{id}")
+        urlopen(f"http://{SERVER_HOST_NAME}:{REST_PORT}/get-invocation-info/{id}")
         .read()
         .decode("utf-8")
     )

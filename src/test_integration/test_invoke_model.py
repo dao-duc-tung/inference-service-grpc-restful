@@ -7,6 +7,7 @@ from protobufs.model_pb2 import ModelInput, ModelInputMetadata
 import os
 
 SERVER_HOST_NAME = os.getenv("SERVER_HOST_NAME", "server")
+GRPC_PORT = os.getenv("GRPC_PORT", "8000")
 
 
 @pytest.mark.slow
@@ -18,7 +19,7 @@ def test_invoke_model(id, content, metadata):
     model_input_metadata_list = [ModelInputMetadata(key=key, value=value)]
     model_input = ModelInput(id=id, content=content, metadata=model_input_metadata_list)
     request = InvocationRequest(model_input=model_input)
-    channel = grpc.insecure_channel(f"{SERVER_HOST_NAME}:8000")
+    channel = grpc.insecure_channel(f"{SERVER_HOST_NAME}:{GRPC_PORT}")
     client = InvocationStub(channel)
     response = client.Invoke(request)
     assert response != None

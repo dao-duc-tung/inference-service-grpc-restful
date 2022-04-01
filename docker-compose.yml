@@ -9,6 +9,8 @@ services:
       SERVER_HOST_NAME: server
       DB_HOST_NAME: ${DB_HOST_NAME}
       DB_PORT: ${DB_PORT}
+      GRPC_PORT: ${GRPC_PORT}
+      REST_PORT: ${REST_PORT}
     networks:
       - aaqua_net
     depends_on:
@@ -19,7 +21,10 @@ services:
   server:
     image: ${DOCKER_IMG}
     container_name: aaqua_server
-    command: python /service/src/main.py --grpc-port=${GRPC_PORT} --rest-port=${REST_PORT}
+    command: python /service/src/main.py
+    environment:
+      GRPC_PORT: ${GRPC_PORT}
+      REST_PORT: ${REST_PORT}
     ports:
       - ${GRPC_PORT}:${GRPC_PORT}
       - ${REST_PORT}:${REST_PORT}
