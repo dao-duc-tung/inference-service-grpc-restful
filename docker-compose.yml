@@ -4,7 +4,11 @@ services:
   tester:
     image: ${DOCKER_IMG}
     container_name: aaqua_tester
-    command: pytest /service/src/
+    command: pytest /service/src/tests/integration/test_two_apis.py
+    environment:
+      SERVER_HOST_NAME: server
+      DB_HOST_NAME: ${DB_HOST_NAME}
+      DB_PORT: ${DB_PORT}
     networks:
       - aaqua_net
     depends_on:
@@ -18,6 +22,17 @@ services:
     command: python /service/src/main.py --grpc-port=${GRPC_PORT} --rest-port=${REST_PORT}
     ports:
       - ${REST_PORT}:${REST_PORT}
+    networks:
+      - aaqua_net
+    depends_on:
+      - db
+
+  db:
+    container_name: ${DB_HOST_NAME}
+    image: redis:6.2.6
+    command: ["redis-server", "/redis.conf"]
+    volumes:
+      - ./config/redis.conf:/redis.conf
     networks:
       - aaqua_net
 

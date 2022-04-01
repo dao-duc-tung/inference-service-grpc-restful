@@ -1,7 +1,7 @@
 import argparse
 
 from apis import ServiceCtrl, flask_app, serve_InvocationService
-from data_module import InMemoryDatabaseMgr
+from data_module import RedisDatabaseMgr
 from model_module import MockModelMgr, S3ModelSource
 
 # Global vars
@@ -9,7 +9,7 @@ GRPC_PORT = 8000
 REST_PORT = 5000
 MODEL_S3_URL = "S3_URL"
 model_mgt = MockModelMgr()
-db_mgt = InMemoryDatabaseMgr()
+db_mgt = RedisDatabaseMgr()
 s3_model_src = S3ModelSource(MODEL_S3_URL)
 
 

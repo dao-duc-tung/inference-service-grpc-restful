@@ -23,16 +23,14 @@ def get_invocation_info(input_id):
     try:
         print(f"get_invocation_info: input_id={input_id}")
         model_input_id = str(escape(input_id))
-        model_input, model_output = ServiceCtrl.get_invocation_info(model_input_id)
+        model_input_dict, model_output_dict = ServiceCtrl.get_invocation_info(
+            model_input_id
+        )
 
-        if type(model_input) == ModelInput:
-            input_dict = ModelIo.model_input_to_dict(model_input)
-            output_dict = {}
-            if type(model_output) == ModelOutput:
-                output_dict = ModelIo.model_output_to_dict(model_output)
+        if model_input_dict != None and model_output_dict != None:
             response_dict = {
-                "model_input": input_dict,
-                "model_output": output_dict,
+                "model_input": model_input_dict,
+                "model_output": model_output_dict,
             }
             print(f"get_invocation_info: response_dict={response_dict}")
         else:
