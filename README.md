@@ -94,7 +94,7 @@ pytest -m client --runslow
 
 ### API usage
 
-Please check [src\test_integration\test_client_two_apis.py](src\test_integration\test_client_two_apis.py) for the code example of calling the two APIs from the outside of the docker containers.
+Please check [src/test_integration/test_client_two_apis.py](src/test_integration/test_client_two_apis.py) for the code example of calling the two APIs from the outside of the docker containers.
 
 ## System Design
 
@@ -184,7 +184,7 @@ The service writes the logs to files that are stored in `src/log` folder. This `
 
 ### Add new Model Manager
 
-The new Model Manager must implement `IModelMgr` interface as below. For more details, please check [src\model_module\i_model_mgr.py](src\model_module\i_model_mgr.py).
+The new Model Manager must implement `IModelMgr` interface as below. For more details, please check [src/model_module/i_model_mgr.py](src/model_module/i_model_mgr.py).
 
 ```python
 class IModelMgr:
@@ -202,13 +202,13 @@ class IModelMgr:
         raise NotImplementedError()
 ```
 
-The Model Manager can be a dedicated one that supports a specific Machine Learning library (eg. TensorFlow, PyTorch, etc.) or it can be a generic Model Manager that wraps a bunch of the dedicated ones. The service currently implements the generic Model Manager. For more details, please check [src\model_module\model_mgr.py](src\model_module\model_mgr.py).
+The Model Manager can be a dedicated one that supports a specific Machine Learning library (eg. TensorFlow, PyTorch, etc.) or it can be a generic Model Manager that wraps a bunch of the dedicated ones. The service currently implements the generic Model Manager. For more details, please check [src/model_module/model_mgr.py](src/model_module/model_mgr.py).
 
-The service currently also implements a dedicated Model Manager for Tensorflow. For more details, please check [src\model_module\tensorflow_model_mgr.py](src\model_module\tensorflow_model_mgr.py).
+The service currently also implements a dedicated Model Manager for Tensorflow. For more details, please check [src/model_module/tensorflow_model_mgr.py](src/model_module/tensorflow_model_mgr.py).
 
 ### Add new Database Manager
 
-The new Database Manager must implement `IDatabaseMgr` interface as below. For more details, please check [src\data_module\i_database_mgr.py](src\data_module\i_database_mgr.py).
+The new Database Manager must implement `IDatabaseMgr` interface as below. For more details, please check [src/data_module/i_database_mgr.py](src/data_module/i_database_mgr.py).
 
 ```python
 class IDatabaseMgr:
@@ -246,11 +246,11 @@ class IDatabaseMgr:
         raise NotImplementedError()
 ```
 
-The service currently implements two Database Manager which are the `InMemoryDatabaseMgr` and `RedisDatabaseMgr`. For more details, please check [src\data_module\in_memory_database_mgr.py](src\data_module\in_memory_database_mgr.py) and [src\data_module\redis_database_mgr.py](src\data_module\redis_database_mgr.py), respectively.
+The service currently implements two Database Manager which are the `InMemoryDatabaseMgr` and `RedisDatabaseMgr`. For more details, please check [src/data_module/in_memory_database_mgr.py](src/data_module/in_memory_database_mgr.py) and [src/data_module/redis_database_mgr.py](src/data_module/redis_database_mgr.py), respectively.
 
 ### Update protobufs
 
-The protobuf files are stored in folder `protobufs`. The file [protobufs\model.proto](protobufs\model.proto) defines the `Model Input` and `Model Output` formats. The file [protobufs\invocation.proto](protobufs\invocation.proto) defines the `Invocation` service.
+The protobuf files are stored in folder `protobufs`. The file [protobufs/model.proto](protobufs/model.proto) defines the `Model Input` and `Model Output` formats. The file [protobufs/invocation.proto](protobufs/invocation.proto) defines the `Invocation` service.
 
 New protobuf files should be put into this `protobufs` folder. The reason why we leave the `protobufs` folder outside of the `src` folder is because usually we have tons of protobuf files and we want to keep them in a dedicated repository so they can be reusable. Keeping the `protobufs` folder outside of the `src` folder also makes the Python source code easier to explore when switching between different Python files and protobuf files.
 
