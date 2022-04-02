@@ -20,6 +20,8 @@ export GRPC_PORT=8000
 export REST_PORT=5000
 export DB_PORT=6379
 
+mkdir -p redis/data
+
 docker build -t $DOCKER_IMG -f Dockerfile .
 docker-compose build
 

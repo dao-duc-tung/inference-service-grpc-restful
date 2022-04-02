@@ -131,6 +131,6 @@ dmypy.json
 # Custom
 models
 images
-redis
+redis/data
 log
 tmp
