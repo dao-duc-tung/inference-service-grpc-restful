@@ -63,7 +63,9 @@ class TensorFlowModelMgr(IModelMgr):
 
     def _load_model_from_url(self, url: str):
         """
-        Supports zip file only
+        Supports zip file only.
+        After unzip the zip file to a new folder,
+        the extracted folder MUST contains the saved_model.pb file.
         """
         current_time = int(time.time())
         out_file = f"{AppConst.TMP_DIR}/tf_model_{current_time}.zip"
