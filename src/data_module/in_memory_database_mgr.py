@@ -35,3 +35,9 @@ class InMemoryDatabaseMgr(IDatabaseMgr):
         if model_input_id in self._model_output_dict:
             return self._model_output_dict[model_input_id]
         return None
+
+    def delete_model_input(self, model_input_id: str, *args, **kwargs):
+        self._model_input_dict.pop(model_input_id)
+
+    def delete_model_output(self, model_input_id: str, *args, **kwargs):
+        self._model_output_dict.pop(model_input_id)

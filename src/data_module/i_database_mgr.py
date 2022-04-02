@@ -28,3 +28,9 @@ class IDatabaseMgr:
 
     def retrieve_model_output(self, model_input_id: str, *args, **kwargs):
         raise NotImplementedError()
+
+    def delete_model_input(self, model_input_id: str, *args, **kwargs):
+        raise NotImplementedError()
+
+    def delete_model_output(self, model_input_id: str, *args, **kwargs):
+        raise NotImplementedError()
