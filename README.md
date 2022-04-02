@@ -55,9 +55,9 @@ To keep the project simple and architecture-focused, we use this [Ultra-lightwei
 
 ## Getting Started
 
-### Installation
+### Quick start
 
-1. Install `docker`
+1. Install `docker` and `docker-compose`
 1. Setup local enviroment for debugging purposes
 
    - Create and activate a virtual environment using `conda`, `venv`, or `pipenv`
@@ -65,6 +65,16 @@ To keep the project simple and architecture-focused, we use this [Ultra-lightwei
 
    ```bash
    pip install -r src/requirements.txt
+   ```
+
+1. Run the service
+
+   ```bash
+   # In terminal 1
+   ./build_sys.sh
+   # In terminal 2
+   cd src
+   python quick_start.py
    ```
 
 ### Development guide
@@ -94,7 +104,38 @@ pytest -m client --runslow
 
 ### API usage
 
-Please check [src/test_integration/test_client_two_apis.py](src/test_integration/test_client_two_apis.py) for the code example of calling the two APIs from the outside of the docker containers.
+Please check function `test_two_apis_good_content()` in [src/test_integration/test_client_two_apis.py](src/test_integration/test_client_two_apis.py) for the code example of calling the two APIs from the outside of the docker containers.
+
+#### Invoke Model
+
+```python
+id = 1
+img_path = "images/lenna.png"
+metadata = []
+
+# Create ModelInput
+base64_str = ImgUtils.img_path_to_base64_str(img_path)
+model_input = ModelInput(id=id, content=base64_str, metadata=metadata)
+
+# Create request
+request = InvocationRequest(model_input=model_input)
+
+# Create gRPC client
+channel = grpc.insecure_channel(f"localhost:8000")
+client = InvocationStub(channel)
+
+# Call gRPC endpoint
+response = client.Invoke(request)
+```
+
+#### Get Invocation Info
+
+```python
+id = 1
+response = urlopen(f"http://localhost:5000/invocation/{id}"
+response = response.read().decode("utf-8")
+response_dict = json.loads(response)
+```
 
 ## System Design
 
