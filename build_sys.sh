@@ -2,12 +2,17 @@
 
 # TEST in ["none", "test"]
 export TEST=$1
-# PYTEST_OPT in ["", "--runslow"]
+# PYTEST_OPT in ["none", "--runslow"]
 export PYTEST_OPT=$2
 
 if [ "$TEST" != "test" ]
 then
     export TEST=none
+fi
+
+if [ "$PYTEST_OPT" == "none" ]
+then
+    export PYTEST_OPT=""
 fi
 
 export DOCKER_IMG=aaqua_sys_img

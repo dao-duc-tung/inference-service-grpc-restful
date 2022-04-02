@@ -26,7 +26,7 @@ services:
       GRPC_PORT: ${GRPC_PORT}
       REST_PORT: ${REST_PORT}
     volumes:
-      - ./log:/service/src/log
+      - ./src/log:/service/src/log
     ports:
       - ${GRPC_PORT}:${GRPC_PORT}
       - ${REST_PORT}:${REST_PORT}

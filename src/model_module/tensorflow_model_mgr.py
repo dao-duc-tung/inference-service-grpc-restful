@@ -27,8 +27,7 @@ class TensorFlowModelMgr(IModelMgr):
     def is_model_loaded(self) -> bool:
         return self._model != None
 
-    @property
-    def model(self):
+    def get_model(self):
         return self._model
 
     def load_model(self, model_source: PathModelSource, *args, **kwargs):
