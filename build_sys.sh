@@ -2,7 +2,7 @@
 
 # TEST in ["none", "test"]
 export TEST=$1
-# PYTEST_OPT in ["none", "fast", "slow", "client"]
+# PYTEST_OPT in ["none", "slow", "client"]
 export PYTEST_OPT=$2
 
 if [ "$TEST" != "test" ]
