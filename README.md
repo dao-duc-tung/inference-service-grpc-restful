@@ -45,7 +45,7 @@ The purpose of the project is to build a Model Inference Service that supports:
   - Receives the model input unique ID
   - Retrieves and returns the corresponding inference result
 
-- The service architecture follows the `SOLID Principles` to achieve the maximal extendability. The service architecture can be extended to:
+- The service architecture follows the [SOLID Principles](https://en.wikipedia.org/wiki/SOLID) to achieve the maximal extendability. The service architecture can be extended to:
 
   - Support model downloading from any type of sources. Eg: an URL, a local path, etc.
   - Support model loading and model inference processes in different Machine Learning frameworks. Eg: TensorFlow, PyTorch, or custom Python script, etc.
@@ -74,27 +74,27 @@ The project uses `vscode` to develop. The debug configuration is already configu
 The project uses `docker-compose` to manage the deployment environment in local and the coordination between docker containers. To build and run the service in local, run:
 
 ```bash
-# Run service and tests
+# 1. Run service and tests
 ./build_sys.sh test
 
-# Run service and slow tests
+# 2. Run service and slow tests
 # Slow tests are tests that run in > ~1 second
 ./build_sys.sh test --runslow
 
-# Run service without running tests
+# 3. Run service without running tests
 ./build_sys.sh
 
-# Run tests outside of the docker containers
-# 1. Run service first
+# 4. Run tests outside of the docker containers
+# 4.1. Run service first
 ./build_sys.sh
-# 2. In your local dev environment, run
+# 4.2. In your local dev environment, run
 cd src
 pytest -m client --runslow
 ```
 
 ### API usage
 
-To call the two APIs from the outside of the docker containers, please check `src\test_integration\test_client_two_apis.py`.
+Please check [src\test_integration\test_client_two_apis.py](src\test_integration\test_client_two_apis.py) for the code example of calling the two APIs from the outside of the docker containers.
 
 ## System Design
 
@@ -125,19 +125,19 @@ To call the two APIs from the outside of the docker containers, please check `sr
 
 ### API design
 
-- API 1: invokeModel(model_input) -> None
-- API 2: getInvocationInfo(model_input_id) -> (model_input, model_output)
+- API 1: `invokeModel(model_input)` -> `None`
+- API 2: `getInvocationInfo(model_input_id)` -> `(model_input, model_output)`
 
 ### Architecture overview
 
 ![service-architecture][service-architecture]
 
-- Service's responsibilities
+Service's responsibilities:
 
-  - Manage Model Manager and Database Manager
-  - Run model inference when invokeModel() API is called via the Model Manager
-  - Save model input and model output to database via Database Manager
-  - Retrieve model input and model output when getInvocationInfo() API is called via Database Manager
+- Manage Model Manager and Database Manager
+- Run model inference when invokeModel() API is called via the Model Manager
+- Save model input and model output to database via Database Manager
+- Retrieve model input and model output when getInvocationInfo() API is called via Database Manager
 
 ### Data flow
 
@@ -172,9 +172,11 @@ The main reasons why we use non-relational database are:
 - The primary key is known. Eg: model input's unique ID
 - The access pattern is known. Eg: APIs are small and well-defined for this small service
 
+#### Backup strategy
+
 When running the database inside a docker container, we want to backup the database to a folder in the local machine. To achieve this, we just need to mount a folder in the local machine to the `/data` folder inside the Redis database container. For more details, please check `docker-compose.yml`.
 
-### Logging
+### Logging synchronization
 
 The service writes the logs to files that are stored in `src/log` folder. This `src/log` folder is mounted to the docker container where the service runs to synchronize the logs.
 
@@ -182,7 +184,7 @@ The service writes the logs to files that are stored in `src/log` folder. This `
 
 ### Add new Model Manager
 
-The new Model Manager must implement `IModelMgr` interface as below. For more details, please check `src\model_module\i_model_mgr.py`.
+The new Model Manager must implement `IModelMgr` interface as below. For more details, please check [src\model_module\i_model_mgr.py](src\model_module\i_model_mgr.py).
 
 ```python
 class IModelMgr:
@@ -200,13 +202,13 @@ class IModelMgr:
         raise NotImplementedError()
 ```
 
-The Model Manager can be a dedicated one that supports a specific Machine Learning library (eg. TensorFlow, PyTorch, etc.) or it can be a generic Model Manager that wraps a bunch of the dedicated ones. The service currently implements the generic Model Manager. For more details, please check `src\model_module\model_mgr.py`.
+The Model Manager can be a dedicated one that supports a specific Machine Learning library (eg. TensorFlow, PyTorch, etc.) or it can be a generic Model Manager that wraps a bunch of the dedicated ones. The service currently implements the generic Model Manager. For more details, please check [src\model_module\model_mgr.py](src\model_module\model_mgr.py).
 
-The service currently also implements a dedicated Model Manager for Tensorflow. For more details, please check `src\model_module\tensorflow_model_mgr.py`.
+The service currently also implements a dedicated Model Manager for Tensorflow. For more details, please check [src\model_module\tensorflow_model_mgr.py](src\model_module\tensorflow_model_mgr.py).
 
 ### Add new Database Manager
 
-The new Database Manager must implement `IDatabaseMgr` interface as below. For more details, please check `src\data_module\i_database_mgr.py`.
+The new Database Manager must implement `IDatabaseMgr` interface as below. For more details, please check [src\data_module\i_database_mgr.py](src\data_module\i_database_mgr.py).
 
 ```python
 class IDatabaseMgr:
@@ -244,11 +246,11 @@ class IDatabaseMgr:
         raise NotImplementedError()
 ```
 
-The service currently implements two Database Manager which are the `InMemoryDatabaseMgr` and `RedisDatabaseMgr`. For more details, please check `src\data_module\in_memory_database_mgr.py` and `src\data_module\redis_database_mgr.py`, respectively.
+The service currently implements two Database Manager which are the `InMemoryDatabaseMgr` and `RedisDatabaseMgr`. For more details, please check [src\data_module\in_memory_database_mgr.py](src\data_module\in_memory_database_mgr.py) and [src\data_module\redis_database_mgr.py](src\data_module\redis_database_mgr.py), respectively.
 
 ### Update protobufs
 
-The protobuf files are stored in folder `protobufs`. The file `protobufs\model.proto` defines the `Model Input` and `Model Output` formats. The file `protobufs\invocation.proto` defines the `Invocation` service.
+The protobuf files are stored in folder `protobufs`. The file [protobufs\model.proto](protobufs\model.proto) defines the `Model Input` and `Model Output` formats. The file [protobufs\invocation.proto](protobufs\invocation.proto) defines the `Invocation` service.
 
 New protobuf files should be put into this `protobufs` folder. The reason why we leave the `protobufs` folder outside of the `src` folder is because usually we have tons of protobuf files and we want to keep them in a dedicated repository so they can be reusable. Keeping the `protobufs` folder outside of the `src` folder also makes the Python source code easier to explore when switching between different Python files and protobuf files.
 
