@@ -10,7 +10,7 @@ RUN python -m pip install --upgrade pip
 COPY src/requirements.txt /service/src/requirements.txt
 RUN python -m pip install -r /service/src/requirements.txt
 
-COPY models/ /service/models/
+# COPY models/ /service/models/
 COPY images/ /service/images/
 COPY protobufs/ /service/protobufs/
 COPY ./build_protobufs.sh /service/build_protobufs.sh
