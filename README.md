@@ -58,9 +58,10 @@ To keep the project simple and architecture-focused, we use this [Ultra-lightwei
 ### Quickstart
 
 1. Install `docker` and `docker-compose`
-1. Setup local environment for debugging purposes
 
-   - Create and activate a virtual environment using `conda`, `venv`, or `pipenv`
+1. (Optional) Setup local dev environment
+
+   - Create and activate a **Python 3.8** virtual environment by using `conda`, `venv`, or `pipenv`
    - Run
 
    ```bash
@@ -73,34 +74,35 @@ To keep the project simple and architecture-focused, we use this [Ultra-lightwei
    # In terminal 1
    ./build_sys.sh
    # In terminal 2
+   # This step requires the local dev environment
    cd src
    python quick_start.py
+   ```
+
+1. Test the service
+
+   ```bash
+   # Option 1. Run service and run tests
+   ./build_sys.sh test "not client and not slow"
+
+   # Option 2. Run service and run all tests including slow tests
+   # Slow tests are tests that run in > ~1 second
+   ./build_sys.sh test "not client"
+
+   # Option 3. Run tests outside of the docker containers
+   # This step requires the local dev environment
+   # 1. Run service first
+   ./build_sys.sh
+   # 2. In your local dev environment, run
+   cd src
+   pytest -m "client"
    ```
 
 ### Development guide
 
 The project uses `vscode` to develop. The debug configuration is already configured in `.vscode/launch.json`.
 
-The project uses `docker-compose` to manage the deployment environment and the coordination between docker containers. To build and run the service, run:
-
-```bash
-# 1. Run service and tests
-./build_sys.sh test
-
-# 2. Run service and slow tests
-# Slow tests are tests that run in > ~1 second
-./build_sys.sh test --runslow
-
-# 3. Run service without running tests
-./build_sys.sh
-
-# 4. Run tests outside of the docker containers
-# 4.1. Run service first
-./build_sys.sh
-# 4.2. In your local dev environment, run
-cd src
-pytest -m client --runslow
-```
+The project uses `docker-compose` to manage the deployment environment and the coordination between docker containers.
 
 ### API usage
 
