@@ -2,7 +2,7 @@ from pathlib import Path
 
 
 class AppConst:
-    APP_NAME = "aaqua_sys"
+    APP_NAME = "inf_sys"
     LOG_FILE = f"log/{APP_NAME}.log"
     TMP_DIR = "tmp"
 

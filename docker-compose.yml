@@ -3,7 +3,7 @@ version: "3.3"
 services:
   tester:
     image: ${DOCKER_IMG}
-    container_name: aaqua_tester
+    container_name: inf_sys_tester
     command: pytest /service/src/ ${PYTEST_OPT}
     environment:
       SERVER_HOST_NAME: server
@@ -12,7 +12,7 @@ services:
       GRPC_PORT: ${GRPC_PORT}
       REST_PORT: ${REST_PORT}
     networks:
-      - aaqua_net
+      - inf_sys_net
     depends_on:
       - server
     profiles:
@@ -20,7 +20,7 @@ services:
 
   server:
     image: ${DOCKER_IMG}
-    container_name: aaqua_server
+    container_name: inf_sys_server
     command: python /service/src/main.py
     environment:
       GRPC_PORT: ${GRPC_PORT}
@@ -31,12 +31,12 @@ services:
       - ${GRPC_PORT}:${GRPC_PORT}
       - ${REST_PORT}:${REST_PORT}
     networks:
-      - aaqua_net
+      - inf_sys_net
     depends_on:
       - database
 
   database:
-    container_name: aaqua_db
+    container_name: inf_sys_db
     image: redis:6.2.6
     command: ["redis-server", "/redis.conf"]
     volumes:
@@ -44,7 +44,7 @@ services:
       # Backup redis database to host machine
       - ./redis/data:/data
     networks:
-      - aaqua_net
+      - inf_sys_net
 
 networks:
-  aaqua_net:
+  inf_sys_net:
