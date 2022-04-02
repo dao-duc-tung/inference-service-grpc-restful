@@ -1,63 +1,285 @@
-# aaqua-sys
+<!-- PROJECT LOGO -->
+<br />
+<p align="center">
+  <a href="https://github.com/dao-duc-tung/inference-service-grpc-restful">
+    <img src="media/banner.png" alt="Logo" width="300" height="100">
+  </a>
 
-## Quick start
+  <h3 align="center">GRPC + RESTful Model Inference Service</h3>
 
-## Requirements
+  <p align="center">
+    <a href="https://github.com/dao-duc-tung/inference-service-grpc-restful/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/dao-duc-tung/inference-service-grpc-restful/issues">Request Feature</a>
+  </p>
+</p>
+
+<!-- TABLE OF CONTENTS -->
+<details open="open">
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#software-design">Software Design</a></li>
+    <li><a href="#convert-tensorflow-model-to-onnx">Convert Tensorflow model to ONNX</a></li>
+    <li><a href="#tensorflow-and-opencv-compatibility-in-object-detection">Tensorflow and OpenCV compatibility in object detection</a></li>
+    <li><a href="#onnx-inference">ONNX Inference</a></li>
+    <li><a href="#distance-estimation">Distance Estimation</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgements">Acknowledgements</a></li>
+  </ol>
+</details>
+
+## About The Project
+
+The purpose of the project is to build a Model Inference Service that supports:
+
+- A gRPC endpoint that:
+
+  - Receives the data as the model input
+  - Saves the model input to the internal database
+  - Runs the model inference process on the given model input
+  - Saves the inference result to the internal database
+
+- A RESTful endpoint that:
+
+  - Receives the model input unique ID
+  - Retrieves and returns the corresponding inference result
+
+- The service architecture follows the `SOLID Principles` to achieve the maximal extendability. The service architecture can be extended to:
+
+  - Support model downloading from any type of sources. Eg: an URL, a local path, etc.
+  - Support model loading and model inference processes in different Machine Learning frameworks. Eg: TensorFlow, PyTorch, or custom Python script, etc.
+  - Support different database technology. Eg: ralational database or non-relational database.
+
+To keep the project simple and architecture-focused, we use this [Ultra-lightweight face detection model](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB).
+
+## Getting Started
+
+### Installation
+
+1. Install `docker`
+1. Setup local enviroment for debugging purposes
+
+   - Create and activate a virtual environment using `conda`, `venv`, or `pipenv`
+   - Run
+
+   ```bash
+   pip install -r src/requirements.txt
+   ```
+
+### Development guide
+
+The project uses `vscode` to develop. The debug configuration is already configured in `.vscode/launch.json`.
+
+The project uses `docker-compose` to manage the deployment environment in local and the coordination between docker containers.
+
+- To build and run the service in local, run:
+
+```bash
+# Run service and tests
+./build_sys.sh test
+
+# Run service and slow tests
+# Slow tests are tests that run in > ~1 second
+./build_sys.sh test --runslow
+
+# Run service without running tests
+./build_sys.sh
+
+# Run test outside of the docker containers
+# This requires the service to be run first
+cd src
+pytest -m client --runslow
+```
+
+### API usage
+
+To call the two APIs from the outside of the docker containers, please check `src\test_integration\test_client_two_apis.py`.
+
+## System design
 
 ### Functional requirements
 
 - API 1 - gRPC-based API
 
-  - input: model input with id, content, and metadata
-  - process: run model inference on given input, save model outputs to database
-  - output: none
+  - Input: model input with id, content, and metadata
+  - Job: run model inference on given input, save model outputs to database
+  - Output: none
 
 - API 2 - RESTful-based API
 
-  - input: input id
-  - process: retrieve model input by input id, retrieve corresponding model outputs
-  - output: content, model output
+  - Input: input id
+  - Job: retrieve model input by input id, retrieve corresponding model outputs
+  - Output: content, model output
 
-- Model is loaded at runtime when starting app given an S3 URL
-  - The system contains only 1 model
+- Model is loaded at runtime when starting app. Note that the service currently supports only one model but it can be extended to support multiple models
 
 ### Non-functional requirements
 
 - Adaptability
   - Load model from S3 URL, filesystem
-  - Support model formats: TensorFlow, PyTorch, MXNet, ONNX, custom Python script, etc
+  - Support machine learning frameworks: TensorFlow, PyTorch, MXNet, ONNX, custom Python script, etc
   - Flexible to change the database technology
 - Reliability: Service is resilient, handle errors
 - Testability: Write unit tests, integration tests
 
-## High-level design
-
 ### API design
 
-- invokeModel(input)
-- getInvocationInfo(input_id) -> (input, output)
+- API 1: invokeModel(model_input) -> None
+- API 2: getInvocationInfo(model_input_id) -> (model_input, model_output)
 
 ### Architecture overview
 
-> invokeModel() --> Main service --> database
+> invokeModel() --> Service --> Database
 
-> getInvocationInfo() <--> Main service <--> database
+> getInvocationInfo() <--> Service <--> Database
 
-> S3 URL --> Main service
+- Service's responsibilities
 
-- Main service contains
+  - Manage Model Manager and Database Manager
+  - Run model inference when invokeModel() API is called via the Model Manager
+  - Save model input and model output to database via Database Manager
+  - Retrieve model input and model output when getInvocationInfo() API is called via Database Manager
 
-  - Model Manager
-  - Database Manager
+### Data flow
 
-- Model Manager responsibilities
+### Sequence diagram
 
-  - Load model at start given
-  - Run model inference when invokeModel() API is called
+### Database management system (DBMS)
 
-- Database Manager responsibilities
+The service currently uses Redis database as the DBMS. Using Redis as a non-relational database gives us some benefits such as:
 
-  - Save model input and model output to database
-  - Retrieve model input and model output when getInvocationInfo() API is called
+- Flexible schema design
+- Supports varieties of data structures
+- High scalability
+- High performance
 
-## Detailed implementation
+The main reasons why we use non-relational database are:
+
+- The model input data can be anything such as image data, numerical data, binary data, URL, etc.
+- The primary key is known. Eg: model input's unique ID
+- The access pattern is known. Eg: APIs are small and well-defined for this small service
+
+When running the database inside a docker container, we want to backup the database to a folder in the local machine. To achieve this, we just need to mount a folder in the local machine to the `/data` folder inside the Redis database container. For more details, please check `docker-compose.yml`.
+
+### Logging
+
+The service writes the logs to files that are stored in `src/log` folder. This `src/log` folder is mounted to the docker container where the service runs to synchronize the logs.
+
+## Extend the service
+
+### Add new Model Manager
+
+The new Model Manager must implement `IModelMgr` interface as below. For more details, please check `src\model_module\i_model_mgr.py`.
+
+```python
+class IModelMgr:
+    @property
+    def is_model_loaded(self) -> bool:
+        raise NotImplementedError()
+
+    def get_model(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def load_model(self, model_source: IModelSource, *args, **kwargs):
+        raise NotImplementedError()
+
+    def invoke(self, model_input: ModelInput, *args, **kwargs) -> ModelOutput:
+        raise NotImplementedError()
+```
+
+The Model Manager can be a dedicated one that supports a specific Machine Learning library (eg. TensorFlow, PyTorch, etc.) or it can be a generic Model Manager that wraps a bunch of the dedicated ones. The service currently implements the generic Model Manager. For more details, please check `src\model_module\model_mgr.py`.
+
+The service currently also implements a dedicated Model Manager for Tensorflow. For more details, please check `src\model_module\tensorflow_model_mgr.py`.
+
+### Add new Database Manager
+
+The new Database Manager must implement `IDatabaseMgr` interface as below. For more details, please check `src\data_module\i_database_mgr.py`.
+
+```python
+class IDatabaseMgr:
+    @property
+    def is_connected(self) -> bool:
+        raise NotImplementedError()
+
+    def connect(self, *args, **kwargs) -> bool:
+        raise NotImplementedError()
+
+    def close(self, *args, **kwargs) -> bool:
+        raise NotImplementedError()
+
+    def flush_all(self, *args, **kwargs) -> bool:
+        raise NotImplementedError()
+
+    def save_model_input(self, model_input: ModelInput, *args, **kwargs):
+        raise NotImplementedError()
+
+    def save_model_output(
+        self, model_input: ModelInput, model_output: ModelOutput, *args, **kwargs
+    ):
+        raise NotImplementedError()
+
+    def retrieve_model_input(self, model_input_id: str, *args, **kwargs):
+        raise NotImplementedError()
+
+    def retrieve_model_output(self, model_input_id: str, *args, **kwargs):
+        raise NotImplementedError()
+
+    def delete_model_input(self, model_input_id: str, *args, **kwargs):
+        raise NotImplementedError()
+
+    def delete_model_output(self, model_input_id: str, *args, **kwargs):
+        raise NotImplementedError()
+```
+
+The service currently implements two Database Manager which are the `InMemoryDatabaseMgr` and `RedisDatabaseMgr`. For more details, please check `src\data_module\in_memory_database_mgr.py` and `src\data_module\redis_database_mgr.py`, respectively.
+
+### Update protobufs
+
+The protobuf files are stored in folder `protobufs`. The file `protobufs\model.proto` defines the `Model Input` and `Model Output` formats. The file `protobufs\invocation.proto` defines the `Invocation` service.
+
+New protobuf files should be put into this `protobufs` folder. The reason why we leave the `protobufs` folder outside of the `src` folder is because usually we have tons of protobuf files and we want to keep them in a dedicated repository so they can be reusable. Keeping the `protobufs` folder outside of the `src` folder also makes the Python source code easier to explore when switching between different Python files and protobuf files.
+
+## Contributing
+
+Contributions make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/FeatureName`)
+3. Commit your Changes (`git commit -m 'Add some FeatureName'`)
+4. Push to the Branch (`git push origin feature/FeatureName`)
+5. Open a Pull Request
+
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+
+## Contact
+
+Tung Dao - [LinkedIn](https://www.linkedin.com/in/tungdao17/)
+
+Project Link: [https://github.com/dao-duc-tung/inference-service-grpc-restful](https://github.com/dao-duc-tung/inference-service-grpc-restful)
+
+## Acknowledgements
+
+- [Ultra-Light-Fast-Generic-Face-Detector-1MB](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB)
+- [Ultra-Light-Fast-Generic-Face-Detector-Tensorflow Converter](https://github.com/jason9075/Ultra-Light-Fast-Generic-Face-Detector_Tensorflow-Model-Converter)
+- [gRPC](https://grpc.io/)
+- [Redis](https://redis.io/)
+
+<!-- MARKDOWN LINKS & IMAGES -->
