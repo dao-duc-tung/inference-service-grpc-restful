@@ -104,48 +104,19 @@ pytest -m client --runslow
 
 ### API usage
 
-Please check function `test_two_apis_good_content()` in [src/test_integration/test_client_two_apis.py](src/test_integration/test_client_two_apis.py) for the code example of calling the two APIs from the outside of the docker containers.
-
-#### Invoke Model
-
-```python
-id = 1
-img_path = "images/lenna.png"
-metadata = []
-
-# Create ModelInput
-base64_str = ImgUtils.img_path_to_base64_str(img_path)
-model_input = ModelInput(id=id, content=base64_str, metadata=metadata)
-
-# Create request
-request = InvocationRequest(model_input=model_input)
-
-# Create gRPC client
-channel = grpc.insecure_channel(f"localhost:8000")
-client = InvocationStub(channel)
-
-# Call gRPC endpoint
-response = client.Invoke(request)
-```
-
-#### Get Invocation Info
-
-```python
-id = 1
-response = urlopen(f"http://localhost:5000/invocation/{id}"
-response = response.read().decode("utf-8")
-response_dict = json.loads(response)
-```
+Please check [src/quick_start.py](src/quick_start.py) for the code example of calling the two APIs from the local machine.
 
 ### Change implementations
 
 Currently, the service uses a trained face detection model. To change the model path, please refer to [src/main.py](src/main.py).
 
-The service currently supports only the TensorFlow framework for the face detection model. To change the framework, you need to implement a new `Model Manager`. For more details, please refer to the section [Add a new Model Manager](#add-a-new-model-manager). To change the model framework, please refer to [src/main.py](src/main.py).
+The service currently supports only TensorFlow as the framework for the face detection model. To change the framework, you need to implement a new `Model Manager`. For more details, please refer to the section [Add a new Model Manager](#add-a-new-model-manager). To change the model framework, please refer to [src/main.py](src/main.py).
 
-The service currently supports the in-memory DBMS (use some variables to store data) and the Redis DBMS. To change the DBMS implementation, please refer to [src/main.py](src/main.py).
+The service currently supports the in-memory Database management system (DBMS), which use some variables to store data, and the Redis DBMS. To change the DBMS implementation, please refer to [src/main.py](src/main.py).
 
 ## System Design
+
+UML diagrams are stored in [uml](uml) folder. To open UML diagrams, please download and install [StarUML](https://staruml.io/) software.
 
 ### Functional requirements
 
