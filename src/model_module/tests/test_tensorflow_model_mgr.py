@@ -3,7 +3,7 @@ from model_module import ImgUtils, PathModelSource, TensorFlowModelMgr
 from protobufs.model_pb2 import ModelInput
 
 model_paths = [
-    "file://../models/tf_face_det/",
+    # "file://../models/tf_face_det/",
     "https://tungdao-public.s3.ap-southeast-1.amazonaws.com/tf_face_det.zip",
 ]
 
