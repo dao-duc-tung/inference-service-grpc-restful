@@ -4,7 +4,7 @@ services:
   tester:
     image: ${DOCKER_IMG}
     container_name: inf_sys_tester
-    command: pytest /service/src/ ${PYTEST_OPT}
+    command: pytest -v /service/src/ "${PYTEST_OPT}"
     environment:
       SERVER_HOST_NAME: server
       DB_HOST_NAME: database

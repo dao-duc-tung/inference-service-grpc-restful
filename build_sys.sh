@@ -2,7 +2,7 @@
 
 # TEST in ["none", "test"]
 export TEST=$1
-# PYTEST_OPT in ["none", "--runslow"]
+# PYTEST_OPT in ["none", "fast", "slow", "client"]
 export PYTEST_OPT=$2
 
 if [ "$TEST" != "test" ]
@@ -13,6 +13,8 @@ fi
 if [ "$PYTEST_OPT" == "none" ]
 then
     export PYTEST_OPT=""
+else
+    export PYTEST_OPT="-m ${PYTEST_OPT}"
 fi
 
 export DOCKER_IMG=inf_sys_img

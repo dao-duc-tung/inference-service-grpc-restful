@@ -11,8 +11,8 @@ SERVER_HOST_NAME = "localhost"
 GRPC_PORT = os.getenv("GRPC_PORT", DefaultApiValues.GRPC_PORT)
 
 
-@pytest.mark.client
 @pytest.mark.slow
+@pytest.mark.client
 @pytest.mark.parametrize("id", [1])
 @pytest.mark.parametrize("content", ["0.1,0.2"])
 @pytest.mark.parametrize("metadata", [("type", "list")])

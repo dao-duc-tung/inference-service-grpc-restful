@@ -18,8 +18,8 @@ REST_PORT = os.getenv("REST_PORT", DefaultApiValues.REST_PORT)
 WAIT_TIME = 0.2
 
 
-@pytest.mark.client
 @pytest.mark.slow
+@pytest.mark.client
 @pytest.mark.parametrize("id", [100])
 @pytest.mark.parametrize("content", ["0.1,0.2"])
 @pytest.mark.parametrize("metadata", [("type", "list")])
@@ -41,8 +41,8 @@ def test_two_apis_bad_content(id, content, metadata):
         assert ex.code == 404
 
 
-@pytest.mark.client
 @pytest.mark.slow
+@pytest.mark.client
 @pytest.mark.parametrize("id", [111])
 @pytest.mark.parametrize("img_path", ["../images/lenna.png"])
 @pytest.mark.parametrize("metadata", [[]])
