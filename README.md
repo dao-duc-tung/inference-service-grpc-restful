@@ -18,25 +18,10 @@
 <details open="open">
   <summary>Table of Contents</summary>
   <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#software-design">Software Design</a></li>
-    <li><a href="#convert-tensorflow-model-to-onnx">Convert Tensorflow model to ONNX</a></li>
-    <li><a href="#tensorflow-and-opencv-compatibility-in-object-detection">Tensorflow and OpenCV compatibility in object detection</a></li>
-    <li><a href="#onnx-inference">ONNX Inference</a></li>
-    <li><a href="#distance-estimation">Distance Estimation</a></li>
+    <li><a href="#about-the-project">About The Project</a></li>
+    <li><a href="#getting-started">Getting Started</a></li>
+    <li><a href="#system-design">System Design</a></li>
+    <li><a href="#extend-service">Extend Service</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -86,9 +71,7 @@ To keep the project simple and architecture-focused, we use this [Ultra-lightwei
 
 The project uses `vscode` to develop. The debug configuration is already configured in `.vscode/launch.json`.
 
-The project uses `docker-compose` to manage the deployment environment in local and the coordination between docker containers.
-
-- To build and run the service in local, run:
+The project uses `docker-compose` to manage the deployment environment in local and the coordination between docker containers. To build and run the service in local, run:
 
 ```bash
 # Run service and tests
@@ -101,8 +84,10 @@ The project uses `docker-compose` to manage the deployment environment in local 
 # Run service without running tests
 ./build_sys.sh
 
-# Run test outside of the docker containers
-# This requires the service to be run first
+# Run tests outside of the docker containers
+# 1. Run service first
+./build_sys.sh
+# 2. In your local dev environment, run
 cd src
 pytest -m client --runslow
 ```
@@ -111,7 +96,7 @@ pytest -m client --runslow
 
 To call the two APIs from the outside of the docker containers, please check `src\test_integration\test_client_two_apis.py`.
 
-## System design
+## System Design
 
 ### Functional requirements
 
@@ -145,9 +130,7 @@ To call the two APIs from the outside of the docker containers, please check `sr
 
 ### Architecture overview
 
-> invokeModel() --> Service --> Database
-
-> getInvocationInfo() <--> Service <--> Database
+![service-architecture][service-architecture]
 
 - Service's responsibilities
 
@@ -158,7 +141,21 @@ To call the two APIs from the outside of the docker containers, please check `sr
 
 ### Data flow
 
+![data-flow][data-flow]
+
+This Data Flow diagram shows the data flow in the service.
+
+When `External Service` sends a request to the `gRPC Invoke Model Endpoint`, the endpoint unwraps the request to get a `Model Input` object and passes to `Service Controller`. `Service Controller` asks `Model Manager` to run the model inference process on the given `Model Input`. The prediction result is wrapped in a `Model Output` object. This object is sent back to `Service Controller`. `Service Controller` ask `Database Manager` to saves this `Model Output` object and its corresponding `Model Input` object to the database.
+
+When `External Service` sends a request to the `RESTful Get Invocation Info Endpoint`, the endpoint unwraps the request to get the `Model Input`'s ID. This ID is passed to `Service Controller`. `Service Controller` asks `Database Manager` to retrieve the corresponding `Model Input` data and `Model Output` data. The retrieved data is then passed back to `RESTful Get Invocation Info Endpoint`. The endpoint responses the data to the `External Service`.
+
 ### Sequence diagram
+
+These sequence diagrams below intuitively describe the data flow of the two main actions which are invoking model and getting invocation info.
+
+![invoke-model-sequence-diagram][invoke-model-sequence-diagram]
+
+![get-invocation-info-sequence-diagram][get-invocation-info-sequence-diagram]
 
 ### Database management system (DBMS)
 
@@ -181,7 +178,7 @@ When running the database inside a docker container, we want to backup the datab
 
 The service writes the logs to files that are stored in `src/log` folder. This `src/log` folder is mounted to the docker container where the service runs to synchronize the logs.
 
-## Extend the service
+## Extend Service
 
 ### Add new Model Manager
 
@@ -283,3 +280,8 @@ Project Link: [https://github.com/dao-duc-tung/inference-service-grpc-restful](h
 - [Redis](https://redis.io/)
 
 <!-- MARKDOWN LINKS & IMAGES -->
+
+[service-architecture]: media/service-architecture.png
+[data-flow]: media/data-flow.png
+[invoke-model-sequence-diagram]: media/invoke-model-sequence-diagram.png
+[get-invocation-info-sequence-diagram]: media/get-invocation-info-sequence-diagram.png
