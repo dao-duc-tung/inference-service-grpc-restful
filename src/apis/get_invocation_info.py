@@ -50,9 +50,7 @@ def decor_response(response_dict: dict, status_code: int) -> flask.Response:
     return response
 
 
-@flask_app.route(
-    f"/{RestApiDefinition.GET_INVOCATION_INFO}/<input_id>", methods=["GET"]
-)
+@flask_app.route(f"/{RestApiDefinition.INVOCATION}/<input_id>", methods=["GET"])
 def get_invocation_info(input_id):
     try:
         logger.info(f"flask_app.get_invocation_info: input_id={input_id}")

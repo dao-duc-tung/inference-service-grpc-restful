@@ -13,7 +13,7 @@ REST_PORT = os.getenv("REST_PORT", DefaultApiValues.REST_PORT)
 def test_get_invocation_info_404(id):
     try:
         urlopen(
-            f"http://{SERVER_HOST_NAME}:{REST_PORT}/{RestApiDefinition.GET_INVOCATION_INFO}/{id}"
+            f"http://{SERVER_HOST_NAME}:{REST_PORT}/{RestApiDefinition.INVOCATION}/{id}"
         )
     except HTTPError as ex:
         assert ex.code == 404

@@ -35,7 +35,7 @@ def test_two_apis_bad_content(id, content, metadata):
 
     try:
         urlopen(
-            f"http://{SERVER_HOST_NAME}:{REST_PORT}/{RestApiDefinition.GET_INVOCATION_INFO}/{id}"
+            f"http://{SERVER_HOST_NAME}:{REST_PORT}/{RestApiDefinition.INVOCATION}/{id}"
         )
     except HTTPError as ex:
         assert ex.code == 404
@@ -57,7 +57,7 @@ def test_two_apis_good_content(id, img_path, metadata):
 
     response = (
         urlopen(
-            f"http://{SERVER_HOST_NAME}:{REST_PORT}/{RestApiDefinition.GET_INVOCATION_INFO}/{id}"
+            f"http://{SERVER_HOST_NAME}:{REST_PORT}/{RestApiDefinition.INVOCATION}/{id}"
         )
         .read()
         .decode("utf-8")

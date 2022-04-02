@@ -12,7 +12,7 @@ Path(AppConst.TMP_DIR).mkdir(parents=True, exist_ok=True)
 
 class RestApiDefinition:
     PING = ""
-    GET_INVOCATION_INFO = "get-invocation-info"
+    INVOCATION = "invocation"
 
 
 class DefaultApiValues:
