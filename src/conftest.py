@@ -2,12 +2,16 @@ import pytest
 
 
 def pytest_configure(config):
-    config.addinivalue_line("markers", "slow: Tests that are very slow.")
+    config.addinivalue_line("markers", "slow: Tests that run in > ~1 seconds.")
+    config.addinivalue_line("markers", "client: Tests that run outside the containers.")
 
 
 def pytest_addoption(parser):
     parser.addoption(
         "--runslow", action="store_true", default=False, help="run slow tests"
+    )
+    parser.addoption(
+        "--client", action="store_true", default=False, help="run client tests"
     )
 
 
