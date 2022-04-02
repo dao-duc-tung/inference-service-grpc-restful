@@ -130,7 +130,6 @@ dmypy.json
 
 # Custom
 models
-images
 redis/data
 log
 tmp
