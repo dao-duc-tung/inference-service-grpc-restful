@@ -194,6 +194,15 @@ The main reasons why we use the non-relational database are:
 - The primary key is known. Eg: model input's unique ID
 - The access pattern is known. Eg: APIs are small and well-defined for this small service
 
+In case we have a structured model input and model output with well-defined schema, we should use the relational database such as MySQL, etc. The schema could be:
+
+- Who create the model input
+- Who create the model output (who trigger the model invocation)
+- The start time of model inference process
+- The end time of model inference process
+- Model configurations (eg. feature names, hyper-parameters, etc.)
+- Reference to the other database that contains model evaluation results or the summary of the model
+
 #### Backup strategy
 
 When running the database inside a docker container, we want to back up the database to a folder in the local machine. To achieve this, we just need to mount a folder in the local machine to the `/data` folder inside the Redis database container. For more details, please check `docker-compose.yml`.
